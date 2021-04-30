@@ -88,7 +88,7 @@ describe('list a statement', () => {
     }).rejects.toBeInstanceOf(GetStatementOperationError.UserNotFound);
   });
 
-  it('should not be able to view a statement a non existent statement', () => {
+  it('should not be able to view a non existent statement', () => {
     expect(async () => {
       const user: ICreateUserDTO = {
         email: 'test@statement.com',
