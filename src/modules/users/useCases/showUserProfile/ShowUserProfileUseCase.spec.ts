@@ -51,11 +51,11 @@ describe('show profile user', () => {
     expect(result.name).toBe(user.name);
   });
 
-  it('should not be able to list a non-existent user', () => {
-    expect(async() =>{
+  it('should not be able to list a non-existent user', async () => {
       const id = 'invalididtoexample';
 
-      await showUserProfileUseCase.execute(id);
-    }).rejects.toBeInstanceOf(ShowUserProfileError);
+      await expect (
+         showUserProfileUseCase.execute(id)
+      ).rejects.toEqual(new ShowUserProfileError);
   })
 });

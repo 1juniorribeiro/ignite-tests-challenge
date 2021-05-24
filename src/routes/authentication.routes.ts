@@ -5,6 +5,6 @@ import { AuthenticateUserController } from '../modules/users/useCases/authentica
 const authenticationRouter = Router();
 const authenticateUserController = new AuthenticateUserController();
 
-authenticationRouter.post('/sessions', authenticateUserController.execute);
+authenticationRouter.post('/sessions', authenticateUserController.handle);
 
 export { authenticationRouter };

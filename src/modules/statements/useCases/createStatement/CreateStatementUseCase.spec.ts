@@ -68,17 +68,17 @@ describe('Create Statements', () => {
     expect(result.amount).toBe(500);
   });
 
-  it('should not be able to create a deposit an non-existent user', () => {
-    expect(async() => {
-      const deposit: ICreateStatementDTO = {
-        user_id: 'invalid-id',
-        amount: 600,
-        description: 'deposit test2',
-        type: 'deposit' as OperationType
-      }
+  it('should not be able to create a deposit an non-existent user', async () => {
+    const deposit: ICreateStatementDTO = {
+      user_id: 'invalid-id',
+      amount: 600,
+      description: 'deposit test2',
+      type: 'deposit' as OperationType
+    }
 
-      await createStatementUseCase.execute(deposit);
-    }).rejects.toBeInstanceOf(CreateStatementError.UserNotFound);
+    await expect(
+      createStatementUseCase.execute(deposit)
+    ).rejects.toEqual(new CreateStatementError.UserNotFound)
   });
 
   it('should be able to create a withdraw', async () => {
@@ -120,53 +120,53 @@ describe('Create Statements', () => {
     expect(result.amount).toBe(400);
   });
 
-  it('should not be able to create a withdraw an non-existent user', () => {
-    expect(async() => {
-      const withdraw: ICreateStatementDTO = {
-        user_id: 'invalid-id',
-        amount: 600,
-        description: 'deposit test2',
-        type: 'withdraw' as OperationType
-      }
+  it('should not be able to create a withdraw an non-existent user', async () => {
+    const withdraw: ICreateStatementDTO = {
+      user_id: 'invalid-id',
+      amount: 600,
+      description: 'deposit test2',
+      type: 'withdraw' as OperationType
+    }
 
-      await createStatementUseCase.execute(withdraw);
-    }).rejects.toBeInstanceOf(CreateStatementError.UserNotFound);
+    await expect(
+      createStatementUseCase.execute(withdraw)
+    ).rejects.toEqual(new CreateStatementError.UserNotFound);
   });
 
-  it('should not be able to create a withdraw with insufficient funds', () => {
-    expect(async () => {
-      const user: ICreateUserDTO = {
-        email: 'test@statement.com',
-        name: 'statement test',
-        password: '123456'
-      }
+  it('should not be able to create a withdraw with insufficient funds', async () => {
+    const user: ICreateUserDTO = {
+      email: 'test@statement.com',
+      name: 'statement test',
+      password: '123456'
+    }
 
-      await createUserUseCase.execute(user);
+    await createUserUseCase.execute(user);
 
-      const userAuthenticated = await authenticateUserUseCase.execute({
-        email: user.email,
-        password: user.password
-      })
+    const userAuthenticated = await authenticateUserUseCase.execute({
+      email: user.email,
+      password: user.password
+    })
 
-      const { sub: user_id } = verify(userAuthenticated.token, 'senhasupersecreta123') as IPayload;
+    const { sub: user_id } = verify(userAuthenticated.token, 'senhasupersecreta123') as IPayload;
 
-      const deposit: ICreateStatementDTO = {
-        user_id,
-        amount: 500,
-        description: 'deposit test',
-        type: 'deposit' as OperationType
-      }
+    const deposit: ICreateStatementDTO = {
+      user_id,
+      amount: 500,
+      description: 'deposit test',
+      type: 'deposit' as OperationType
+    }
 
-      await createStatementUseCase.execute(deposit);
+    await createStatementUseCase.execute(deposit);
 
-      const withdraw: ICreateStatementDTO = {
-        user_id,
-        amount: 600,
-        description: 'deposit test',
-        type: 'withdraw' as OperationType
-      }
+    const withdraw: ICreateStatementDTO = {
+      user_id,
+      amount: 600,
+      description: 'deposit test',
+      type: 'withdraw' as OperationType
+    }
 
-      await createStatementUseCase.execute(withdraw);
-    }).rejects.toBeInstanceOf(CreateStatementError.InsufficientFunds);
+    await expect(
+      createStatementUseCase.execute(withdraw)
+    ).rejects.toEqual(new CreateStatementError.InsufficientFunds)
   })
 });

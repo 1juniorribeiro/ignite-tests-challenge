@@ -1,3 +1,4 @@
+import { Statement } from "modules/statements/entities/Statement";
 import { inject, injectable } from "tsyringe";
 
 import { IUsersRepository } from "../../../users/repositories/IUsersRepository";
@@ -15,7 +16,7 @@ export class CreateStatementUseCase {
     private statementsRepository: IStatementsRepository
   ) {}
 
-  async execute({ user_id, type, amount, description }: ICreateStatementDTO) {
+  async execute({ user_id, type, amount, description }: ICreateStatementDTO): Promise<Statement> {
     const user = await this.usersRepository.findById(user_id);
 
     if(!user) {

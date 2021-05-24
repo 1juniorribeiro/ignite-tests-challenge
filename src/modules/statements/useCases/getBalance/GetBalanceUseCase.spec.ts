@@ -77,15 +77,16 @@ describe('Get user balance', () => {
 
     const result = await getBalanceUseCase.execute({user_id});
 
+
     expect(result.balance).toBe(100)
     expect(result.statement.length).toBe(2);
   });
 
-  it('should not be able to list balance a non existent user', () => {
-    expect(async() => {
+  it('should not be able to list balance a non existent user', async () => {
       const user_id = 'invalid_id123'
 
-      await getBalanceUseCase.execute({user_id});
-    }).rejects.toBeInstanceOf(GetBalanceError);
+      await expect (
+        getBalanceUseCase.execute({user_id})
+      ).rejects.toEqual(new GetBalanceError);
   })
 });

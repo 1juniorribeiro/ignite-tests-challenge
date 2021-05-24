@@ -28,16 +28,16 @@ describe('Create User', () => {
   });
 
   it('should not be able to create a new user with same email', async () => {
-    expect(async () => {
-      const user: ICreateUserDTO = {
-        name: 'user2',
-        email: 'user2@test.com',
-        password: '12345'
-      }
+    const user: ICreateUserDTO = {
+      name: 'user2',
+      email: 'user2@test.com',
+      password: '12345'
+    }
 
-      await createUserUseCase.execute(user);
+    await createUserUseCase.execute(user);
 
-      await createUserUseCase.execute(user);
-    }).rejects.toBeInstanceOf(CreateUserError);
+    await expect(
+      createUserUseCase.execute(user)
+    ).rejects.toEqual( new CreateUserError);
   });
 })

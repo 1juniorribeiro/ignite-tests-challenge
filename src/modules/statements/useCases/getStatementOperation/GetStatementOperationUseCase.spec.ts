@@ -55,7 +55,7 @@ describe('list a statement', () => {
 
     const { sub: user_id } = verify(userAuthenticated.token, 'senhasupersecreta123') as IPayload;
 
-    const  statement = await inMemoryStatementsRepository.create({
+    const statement = await inMemoryStatementsRepository.create({
       user_id,
       amount: 500,
       description: 'deposit test',
@@ -64,32 +64,31 @@ describe('list a statement', () => {
 
     const statement_id = statement.id as string;
 
-    const result = await getStatementOperationUseCase.execute({user_id, statement_id});
+    const result = await getStatementOperationUseCase.execute({ user_id, statement_id });
 
     expect(result).toHaveProperty('type');
     expect(result.amount).toBe(500);
     expect(result).toHaveProperty('id');
   });
 
-  it('should not be able to view a statement a non existent user', () => {
-    expect(async () => {
-      const user_id = 'invalid_id321'
+  it('should not be able to view a statement a non existent user', async () => {
+    const user_id = 'invalid_id321'
 
-      const  statement = await inMemoryStatementsRepository.create({
-        user_id,
-        amount: 500,
-        description: 'deposit test',
-        type: 'deposit' as OperationType
-      })
+    const statement = await inMemoryStatementsRepository.create({
+      user_id,
+      amount: 500,
+      description: 'deposit test',
+      type: 'deposit' as OperationType
+    })
 
-      const statement_id = statement.id as string;
+    const statement_id = statement.id as string;
 
-      await getStatementOperationUseCase.execute({user_id, statement_id});
-    }).rejects.toBeInstanceOf(GetStatementOperationError.UserNotFound);
+    await expect(
+      getStatementOperationUseCase.execute({ user_id, statement_id })
+    ).rejects.toEqual(new GetStatementOperationError.UserNotFound);
   });
 
-  it('should not be able to view a non existent statement', () => {
-    expect(async () => {
+  it('should not be able to view a non existent statement', async () => {
       const user: ICreateUserDTO = {
         email: 'test@statement.com',
         name: 'statement test',
@@ -107,7 +106,8 @@ describe('list a statement', () => {
 
       const statement_id = 'invalid_id456';
 
-      await getStatementOperationUseCase.execute({user_id, statement_id});
-    }).rejects.toBeInstanceOf(GetStatementOperationError.StatementNotFound);
+      await expect (
+        getStatementOperationUseCase.execute({ user_id, statement_id })
+      ).rejects.toEqual( new GetStatementOperationError.StatementNotFound);
   })
 });
